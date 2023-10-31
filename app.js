@@ -1,6 +1,8 @@
 const express = require('express')
 const app = express();
 const mongoose = require('mongoose')
+require('dotenv').config();
+const dbUrl = process.env.DB_URL;
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -18,7 +20,7 @@ const postRouter = require('./routes/post')
 
 
 //Create database
-mongoose.connect("mongodb+srv://c2star07:hiennguyen123@cluster0.ubv4phk.mongodb.net/Portfolio?retryWrites=true&w=majority")
+mongoose.connect(dbUrl)
   .then(() => {
     console.log('Success connected database')
   })
