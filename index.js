@@ -18,6 +18,7 @@ app.use(cors(corsOptions));
 //import route
 const postRouter = require("./routes/post");
 const userRouter = require("./routes/user");
+const contactRouter = require("./routes/contact");
 
 //Create database
 mongoose
@@ -32,6 +33,7 @@ mongoose
 //Use route
 app.use("/api/post", postRouter);
 app.use("/api/auth", userRouter);
+app.use("/api/contact", contactRouter);
 
 app.get("/", (req, res) => {
   res.send(
