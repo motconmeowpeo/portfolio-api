@@ -52,6 +52,7 @@ router.get("/:id", async (req, res) => {
   if (!post) res.status(404).send("Not found");
   else res.send(post);
 });
+
 router.put("/:id", async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
 

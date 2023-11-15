@@ -2,9 +2,9 @@ const express = require("express");
 
 const { Contact } = require("../model/contact");
 const router = express.Router();
-const sgMail = require('@sendgrid/mail')
-sgMail.setApiKey(process.env.SENDGRID_API_KEY)
-
+const jwt = require("jsonwebtoken");
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 router.post("/", async (req, res) => {
     contact = new Contact({
@@ -40,6 +40,16 @@ router.post("/", async (req, res) => {
 
 router.get("/", (req, res) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
+    const token = req.header("Authorization");
+    if (!token) {
+        return res.status(403).send("Access denied");
+    }
+    const secretKey = process.env.SECRET_KEY;
+    jwt.verify(token, secretKey, (err, decoded) => {
+        if (err) {
+            return res.status(401).send("Invalid token");
+        }
+    });
 
     Contact.find()
         .sort({ createAt: -1 })
@@ -49,9 +59,45 @@ router.get("/", (req, res) => {
         });
 });
 
+router.put("/:id", async (req, res) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    const token = req.header("Authorization");
+    if (!token) {
+        return res.status(403).send("Access denied");
+    }
+    const secretKey = process.env.SECRET_KEY;
+    jwt.verify(token, secretKey, (err, decoded) => {
+        if (err) {
+            return res.status(401).send("Invalid token");
+        }
+    });
+    const contact = await Contact.findByIdAndUpdate(
+        req.params.id,
+        {
+            resolved: true,
+            resolvedAt: new Date()
+        },
+        { new: true }
+    );
+    if (!contact) res.status(404).send("Not found");
+    else {
+        res.send(contact);
+    }
+});
+
 //delete
 router.post("/delete", async (req, res) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
+    const token = req.header("Authorization");
+    if (!token) {
+        return res.status(403).send("Access denied");
+    }
+    const secretKey = process.env.SECRET_KEY;
+    jwt.verify(token, secretKey, (err, decoded) => {
+        if (err) {
+            return res.status(401).send("Invalid token");
+        }
+    });
     const id = req.body.id;
     const contact = await Contact.findByIdAndRemove(id);
     if (!contact) res.status(404).send("Not found");
