@@ -36,8 +36,13 @@ router.post("/", async (req, res) => {
 //Get all
 router.get("/", (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
-
-  Post.find()
+  const search = req.query.search || '';
+  Post.find({
+    $or: [
+      { title: { $regex: search, $options: 'i' } }, // Case-insensitive search on 'title' field
+      { description: { $regex: search, $options: 'i' } }, // Case-insensitive search on 'content' field
+    ],
+  })
     .sort({ createAt: -1 })
     .then((post) => res.send(post))
     .catch((err) => {
@@ -55,7 +60,16 @@ router.get("/:id", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
-
+  const token = req.header("Authorization");
+  if (!token) {
+    return res.status(403).send("Access denied");
+  }
+  const secretKey = process.env.SECRET_KEY;
+  jwt.verify(token, secretKey, (err, decoded) => {
+    if (err) {
+      return res.status(401).send("Invalid token");
+    }
+  });
   const updatePost = await Post.findByIdAndUpdate(
     req.params.id,
     {

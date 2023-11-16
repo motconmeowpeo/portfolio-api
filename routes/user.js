@@ -5,26 +5,35 @@ const router = express.Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
-
 // Create user
-// router.post("/create", async (req, res) => {
-//   res.setHeader("Access-Control-Allow-Origin", "*");
-//   const hashedPassword = await bcrypt.hash(req.body.password, 10); // 10 is the number of salt rounds
+router.post("/create", async (req, res) => {
+  console.log(typeof process.env.ALLOW_CREATE_ACCOUNT)
+  if (process.env.ALLOW_CREATE_ACCOUNT === '1') {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    const hashedPassword = await bcrypt.hash(req.body.password, 10); // 10 is the number of salt rounds
 
-//   user = new User({
-//     username: req.body.username,
-//     email: req.body.email,
-//     password: hashedPassword,
-//   });
-//   user
-//     .save()
-//     .then((user) => {
-//       res.send(user);
-//     })
-//     .catch((err) => {
-//       res.status(500).send(err);
-//     });
-// });
+    user = new User({
+      username: req.body.username,
+      email: req.body.email,
+      password: hashedPassword,
+    });
+    user
+      .save()
+      .then((user) => {
+        res.send(user);
+      })
+      .catch((err) => {
+        res.status(500).send(err);
+      });
+  }
+  else {
+    res.json({ message: "Can not create account" })
+  }
+
+
+});
+
+
 //Get
 router.post("/login", async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
