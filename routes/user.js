@@ -7,7 +7,6 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 // Create user
 router.post("/create", async (req, res) => {
-  console.log(typeof process.env.ALLOW_CREATE_ACCOUNT)
   if (process.env.ALLOW_CREATE_ACCOUNT === '1') {
     res.setHeader("Access-Control-Allow-Origin", "*");
     const hashedPassword = await bcrypt.hash(req.body.password, 10); // 10 is the number of salt rounds

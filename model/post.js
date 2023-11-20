@@ -20,6 +20,11 @@ const postSchema = new mongoose.Schema({
     type: Date,
     require: true,
   },
+  isActive: {
+    type: Boolean,
+    require: false,
+    default: true
+  }
 });
 
 exports.Post = new mongoose.model("Post", postSchema);

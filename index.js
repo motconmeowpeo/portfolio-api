@@ -15,10 +15,12 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.set('trust proxy', true);
 //import route
 const postRouter = require("./routes/post");
 const userRouter = require("./routes/user");
 const contactRouter = require("./routes/contact");
+const countRouter = require("./routes/count");
 
 //Create database
 mongoose
@@ -34,6 +36,7 @@ mongoose
 app.use("/api/post", postRouter);
 app.use("/api/auth", userRouter);
 app.use("/api/contact", contactRouter);
+app.use("/api/count", countRouter);
 
 app.get("/", (req, res) => {
   res.send(

@@ -104,4 +104,31 @@ router.post("/delete", async (req, res) => {
     res.send(post);
   }
 });
+
+//Inactive
+
+router.put("/inactive/:id", async (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  const token = req.header("Authorization");
+  if (!token) {
+    return res.status(403).send("Access denied");
+  }
+  const secretKey = process.env.SECRET_KEY;
+  jwt.verify(token, secretKey, (err, decoded) => {
+    if (err) {
+      return res.status(401).send("Invalid token");
+    }
+  });
+  const updatePost = await Post.findByIdAndUpdate(
+    req.params.id,
+    {
+      isActive: req.body.isActive
+    },
+    { new: true }
+  );
+  if (!updatePost) res.status(404).send("Not found");
+  else {
+    res.send(updatePost);
+  }
+});
 module.exports = router;
